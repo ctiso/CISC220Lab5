@@ -20,9 +20,9 @@ BSTY::BSTY() {
 // adjustHeights method that will update the heights of all the 
 // ancestors of the node that was just inserted.
 bool BSTY:: insertit(string x ) {
-	bool there=true;
+	//bool there=true;
+	NodeT *n=new NodeT(x);
 	if(root==NULL){
-		NodeT *n=new NodeT(x);
 		root=n;
 		return true;
 	}
@@ -30,8 +30,30 @@ bool BSTY:: insertit(string x ) {
 		return false;
 	}
 	else{
-		NodeT *x=root;
-
+		NodeT *tmp=root;
+		while(tmp!=NULL){
+			if(tmp->data==x){
+				return false;
+			}
+			else{
+				if(x>tmp->data){
+					tmp=tmp->right;
+				}
+				if(x<tmp->data){
+					tmp=tmp->left;
+				}
+			}
+		}
+		tmp=n;
+		n->parent=tmp->parent;
+		tmp=n->parent;
+		if(tmp->data>x){
+			tmp->right=n;
+		}
+		else{
+			tmp->left=n;
+		}
+		return true;
 	}
 
 }
@@ -78,6 +100,12 @@ void BSTY::printTreeIO() {
 // Use the slides, but make sure you can understand how the tree is 
 // traversed in order
 void BSTY::printTreeIO(NodeT *n) {
+	if(n==NULL){
+		return;
+	}
+	printTreeIO(n->left);
+	cout<<n->data<<endl;
+	printTreeIO(n->right);
 }
 
 void BSTY::printTreePre() {
@@ -93,7 +121,12 @@ void BSTY::printTreePre() {
 // child.  Use the slides, but make sure you understand how a tree is traversed in
 // pre-order
 void BSTY::printTreePre(NodeT *n) {
-
+	if(n==NULL){
+			return;
+		}
+	cout<<n->data<<endl;
+	printTreeIO(n->left);
+	printTreeIO(n->right);
 }
 
 void BSTY::printTreePost() {
@@ -110,7 +143,12 @@ void BSTY::printTreePost() {
 // Use the slides, but make sure you understand how a tree is traversed in
 // post-order
 void BSTY::printTreePost(NodeT *n) {
-
+	if(n==NULL){
+			return;
+	}
+	printTreeIO(n->left);
+	printTreeIO(n->right);
+	cout<<n->data<<endl;
 }
 void BSTY::myPrint() {
 	if (root == NULL ) {
@@ -142,7 +180,13 @@ void BSTY::myPrint(NodeT *n) {
 // NOTE: If the node can't be found, this method prints out that x can't be found.
 // if it is found, the printNode method is called for the node.  
 NodeT *BSTY::find(string x) {
+	if(root->data==x){
+		root->printNode();
+		return root;
+	}
+	else{
 
+	}
 }
 
 /*************************************************************************************/
