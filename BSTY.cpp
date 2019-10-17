@@ -213,43 +213,70 @@ NodeT *BSTY::find(string x) {
 /* UNDERSTANDING HOW THEY WORK!!                                                     */
 /*************************************************************************************/
 /* When removing a node from a binary search tree, the resulting tree MUST BE a binary
-/* search tree.  
-/*
-/* When removing a node, there are 3 conditions:
-/* 1: when the node being removed has no children, in which case the node is deleted,
-/* the node's parent is set to NULL, and the node's parent's height is adjusted (if
-/* necessary) and heights on up are adjusted.
-/* 2: when the node being removed has one child, in which case the node's parent points
-/* to the node's child, and the node's child points to the node's parent, and the node
-/* is deleted (and the height of the parent on up as necessary is adjusted)
-/* 3: when the node has 2 children, in which case the left-most child of the node's 
-/* right child replaces the node.  
-/* A couple of notes about this one: you are replacing a node with a node that is lower
-/* down in the tree.  That means that you are, in essence, removing the node from that
-/* lower position and moving it up to the old node's location.  Thus the replacing node
-/* must be removed using 1 or 2 above (why not 3?).  The heights must be adjusted after 
-/* the replacing node is removed from its old location but before it is inserted into its 
-/* new location.  Equally, the replacing node's height must be adjusted to be the larger of
-/* its two children's heights before you adjust heights above that.  
-/*****************************************************************************************/
+ search tree.
+
+ When removing a node, there are 3 conditions:
+ 1: when the node being removed has no children, in which case the node is deleted,
+ the node's parent is set to NULL, and the node's parent's height is adjusted (if
+ necessary) and heights on up are adjusted.
+ 2: when the node being removed has one child, in which case the node's parent points
+ to the node's child, and the node's child points to the node's parent, and the node
+ is deleted (and the height of the parent on up as necessary is adjusted)
+ 3: when the node has 2 children, in which case the left-most child of the node's
+ right child replaces the node.
+ A couple of notes about this one: you are replacing a node with a node that is lower
+down in the tree.  That means that you are, in essence, removing the node from that
+ lower position and moving it up to the old node's location.  Thus the replacing node
+ must be removed using 1 or 2 above (why not 3?).  The heights must be adjusted after
+ the replacing node is removed from its old location but before it is inserted into its
+ new location.  Equally, the replacing node's height must be adjusted to be the larger of
+ its two children's heights before you adjust heights above that.
+*****************************************************************************************/
 /* remove(): takes as input a string, uses the find method to find the node in the tree that
-/* holds that string, and then calls replace1, replace2, or replace3 depending on what type
-/* of replacing should be done.  It adjusts the heights, deletes the node, and returns
-/* true if the removal was successful.
+ holds that string, and then calls replace1, replace2, or replace3 depending on what type
+ of replacing should be done.  It adjusts the heights, deletes the node, and returns
+ true if the removal was successful.
 */
 bool BSTY::remove(string s) {
 	bool removed=false;
+	NodeT *rem=find(s);
+	int count=0;
+	if(rem->right !=NULL){
+		count++;
+	}
+	if(rem->left !=NULL){
+		count++;
+	}
+	if(count==2){
+		remove3(rem);
+		adjustHeights(rem);
+		delete rem;
+		removed=true;
+	}
+	if(count==1){
+		remove2(rem);
+		adjustHeights(rem);
+		delete rem;
+		removed=true;
+	}
+	if(count==0){
+		remove1(rem);
+		adjustHeights(rem);
+		delete rem;
+		removed=true;
+	}
+
+	return removed;
 }
 
 /* remove1(): called when the node to be removed has no children. Takes as input the 
-/* node to be removed, and sets the parent of the node to point to NULL.
-/* helpful hint: if (n->parent->left == n) is true, then n is its parent's left child.
-/* Make sure you check to whether n is the root or not.
+ node to be removed, and sets the parent of the node to point to NULL.
+ helpful hint: if (n->parent->left == n) is true, then n is its parent's left child.
+ Make sure you check to whether n is the root or not.
 */
 void BSTY::remove1(NodeT *n) {
 	if(n==root){
 		root=NULL;
-		delete n;
 	}
 	NodeT *rem=n->parent;
 	if(rem->left==n){
@@ -259,17 +286,16 @@ void BSTY::remove1(NodeT *n) {
 		rem->right==NULL;
 	}
 	n->parent==NULL;
-	delete n;
 }
 
 /* remove2(): called when the node to be removed has 1 child only.  Takes as input
-/* the node to be removed and bypasses it by making the parent point to the node's
-/* one child, and makes the node's one child point to the node's parent.  
-/* This one needs a bunch of checking - you need to see if the node is the parent's
-/* left or right child, and you need to see if the node's child is its left or its
-/* right child.
-/* Also, make sure you check that if the node to be removed is the root, then the 
-/* one child becomes the root.
+ the node to be removed and bypasses it by making the parent point to the node's
+ one child, and makes the node's one child point to the node's parent.
+ This one needs a bunch of checking - you need to see if the node is the parent's
+ left or right child, and you need to see if the node's child is its left or its
+ right child.
+  Also, make sure you check that if the node to be removed is the root, then the
+ one child becomes the root.
 */ 
 void BSTY::remove2(NodeT *n) {
 	NodeT *temp1;
@@ -283,42 +309,60 @@ void BSTY::remove2(NodeT *n) {
 	if(n==root){
 		root=temp1;
 		temp1->parent==NULL;
-		delete n;
 		return;
 	}
 	if(rem->left==n){
 		temp1->parent=rem;
 		rem->left=temp1;
-		delete n;
 		return;
 	}
 	if(rem->right==n){
 		temp1->parent=rem;
 		rem->right=temp1;
-		delete n;
 		return;
 	}
 }
 
 /* remove3(): called when the node to be removed has 2 children.  Takes as input the
-/* node to be removed.  The node to replace the node to be removed should be the 
-/* left-most descendent of the node's right child.  That way the binary search tree
-/* properties are guaranteed to be maintained.
-/* When replacing the node to be removed with the replacing node, the replacing node
-/* is, in essence, being removed from its place in the tree, and thus replace1 or 
-/* replace2 methods should be used.
-/* The new node's parent must be set to the removed node's parent, the removed node's
-/* parent must point to the new node, the new node's left child must point to the 
-/* removed node's left child (and the child must point to the new node as a parent), 
-/* and the same for teh right child.
-/* Remember to take into account that the node being removed might be the root.
+ node to be removed.  The node to replace the node to be removed should be the
+left-most descendant of the node's right child.  That way the binary search tree
+properties are guaranteed to be maintained.
+When replacing the node to be removed with the replacing node, the replacing node
+ is, in essence, being removed from its place in the tree, and thus replace1 or
+ replace2 methods should be used.
+ The new node's parent must be set to the removed node's parent, the removed node's
+ parent must point to the new node, the new node's left child must point to the
+ removed node's left child (and the child must point to the new node as a parent),
+ and the same for the right child.
+Remember to take into account that the node being removed might be the root.
 */
 void BSTY::remove3(NodeT *n) {
-
+	NodeT *temp1=n->right;
+	NodeT *temp2=n->left;
+	NodeT *leftmost=temp1;
+	while(leftmost->left!=NULL){
+		leftmost=leftmost->left;
+	}
+	if(leftmost->right ==NULL && leftmost->left==NULL){
+		remove1(leftmost);
+		leftmost->parent=n->parent;
+		leftmost->right=temp1;
+		leftmost->left=temp2;
+		temp1->parent=leftmost;
+		temp2->parent=leftmost;
+	}
+	if(leftmost->right ==NULL && leftmost->left==NULL){
+		remove2(leftmost);
+		leftmost->parent=n->parent;
+		leftmost->right=temp1;
+		leftmost->left=temp2;
+		temp1->parent=leftmost;
+		temp2->parent=leftmost;
+	}
 }
 
 /* findMin(): takes as input a node, and finds the left-most descendant of its 
-/* right child.  The left-most descendent is returned.
+ right child.  The left-most descendent is returned.
 */
 NodeT *BSTY::findMin(NodeT *n) {
 	NodeT *tmp=n->right;
