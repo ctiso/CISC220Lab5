@@ -234,11 +234,11 @@ NodeT *BSTY::find(string x) {
 /*****************************************************************************************/
 /* remove(): takes as input a string, uses the find method to find the node in the tree that
 /* holds that string, and then calls replace1, replace2, or replace3 depending on what type
-/* of replacing should be done.  It adjusts the heights, deletes teh node, and returns 
+/* of replacing should be done.  It adjusts the heights, deletes the node, and returns
 /* true if the removal was successful.
 */
 bool BSTY::remove(string s) {
-
+	bool removed=false;
 }
 
 /* remove1(): called when the node to be removed has no children. Takes as input the 
@@ -247,7 +247,19 @@ bool BSTY::remove(string s) {
 /* Make sure you check to whether n is the root or not.
 */
 void BSTY::remove1(NodeT *n) {
-
+	if(n==root){
+		root=NULL;
+		delete n;
+	}
+	NodeT *rem=n->parent;
+	if(rem->left==n){
+		rem->left==NULL;
+	}
+	if(rem->right==n){
+		rem->right==NULL;
+	}
+	n->parent==NULL;
+	delete n;
 }
 
 /* remove2(): called when the node to be removed has 1 child only.  Takes as input
@@ -260,7 +272,32 @@ void BSTY::remove1(NodeT *n) {
 /* one child becomes the root.
 */ 
 void BSTY::remove2(NodeT *n) {
-
+	NodeT *temp1;
+	if(n->right==NULL){
+		temp1=n->left;
+	}
+	if(n->left==NULL){
+		temp1=n->right;
+	}
+	NodeT *rem=n->parent;
+	if(n==root){
+		root=temp1;
+		temp1->parent==NULL;
+		delete n;
+		return;
+	}
+	if(rem->left==n){
+		temp1->parent=rem;
+		rem->left=temp1;
+		delete n;
+		return;
+	}
+	if(rem->right==n){
+		temp1->parent=rem;
+		rem->right=temp1;
+		delete n;
+		return;
+	}
 }
 
 /* remove3(): called when the node to be removed has 2 children.  Takes as input the
@@ -284,7 +321,11 @@ void BSTY::remove3(NodeT *n) {
 /* right child.  The left-most descendent is returned.
 */
 NodeT *BSTY::findMin(NodeT *n) {
-
+	NodeT *tmp=n->right;
+	while(tmp->left!=NULL){
+		tmp=tmp->left;
+	}
+	return tmp;
 }
 
 void BSTY::myPrintEC() {
