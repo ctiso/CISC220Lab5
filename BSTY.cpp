@@ -20,7 +20,20 @@ BSTY::BSTY() {
 // adjustHeights method that will update the heights of all the 
 // ancestors of the node that was just inserted.
 bool BSTY:: insertit(string x ) {
-	
+	bool there=true;
+	if(root==NULL){
+		NodeT *n=new NodeT(x);
+		root=n;
+		return true;
+	}
+	else if(root->data ==x){
+		return false;
+	}
+	else{
+		NodeT *x=root;
+
+	}
+
 }
 
 // the adjustHeights method updates the heights of every ancestor of the node n.
@@ -36,13 +49,18 @@ bool BSTY:: insertit(string x ) {
 // the loop has worked its way up to the root, or until the currently being checked
 // ancestor is not changed.  
 void BSTY::adjustHeights(NodeT *n) {
-	if(n->parent->height==n->height +1){
+	if(n->parent->height>n->height){
 		return;
 	}
 	else{
-		while(n->parent->height!=n->height +1){
-			n->parent->height +=1;
-			adjustHeights(n->parent);
+		NodeT *temp=n->parent;
+		bool brk=true;
+		while(brk || n!=root){
+			temp->height +=1;
+			if(temp->parent->height >temp->height){
+				brk =false;
+			}
+			temp=temp->parent;
 		}
 	}
 }
