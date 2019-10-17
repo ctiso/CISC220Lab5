@@ -180,12 +180,29 @@ void BSTY::myPrint(NodeT *n) {
 // NOTE: If the node can't be found, this method prints out that x can't be found.
 // if it is found, the printNode method is called for the node.  
 NodeT *BSTY::find(string x) {
+	NodeT *tmp=root;
 	if(root->data==x){
 		root->printNode();
 		return root;
 	}
 	else{
+		while(tmp->data!=x || tmp==NULL){
 
+			if(x>tmp->data){
+				tmp=tmp->right;
+			}
+			if(x<tmp->data){
+				tmp=tmp->left;
+			}
+		}
+		if(tmp->data==x){
+			tmp->printNode();
+			return tmp;
+		}
+		if(tmp==NULL){
+			cout<<"x can't be found"<<endl;
+			return NULL;
+		}
 	}
 }
 
