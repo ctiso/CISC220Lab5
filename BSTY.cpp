@@ -77,8 +77,20 @@ void BSTY::adjustHeights(NodeT *n) {
 	else{
 		NodeT *temp=n->parent;
 		bool brk=true;
+		int max;
 		while(brk || n!=root){
-			temp->height +=1;
+			if(temp->right->height > temp->left->height){
+				max=temp->right->height;
+			}
+			if(temp->right->height < temp->left->height){
+				max=temp->left->height;
+			}
+			if(max==temp->height){
+				temp->height +=1;
+			}
+			if(temp->height >max+1){
+				temp->height-=1;
+			}
 			if(temp->parent->height >temp->height){
 				brk =false;
 			}
