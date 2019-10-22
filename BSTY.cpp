@@ -20,40 +20,40 @@ BSTY::BSTY() {
 // adjustHeights method that will update the heights of all the 
 // ancestors of the node that was just inserted.
 bool BSTY:: insertit(string x ) {
-	//bool there=true;
 	NodeT *n=new NodeT(x);
 	if(root==NULL){
 		root=n;
 		return true;
 	}
-	else if(root->data ==x){
-		return false;
-	}
 	else{
 		NodeT *tmp=root;
-		while(tmp!=NULL){
-			if(tmp->data==x){
-				return false;
-			}
-			else{
-				if(x>tmp->data){
-					tmp=tmp->right;
+		while(tmp!= NULL){
+			if(x<tmp->data){
+				if(tmp->left==NULL){
+					tmp->left=new NodeT(x);
+					tmp->left->parent=tmp;
+					adjustHeights(tmp->left);
+					return true;
 				}
-				if(x<tmp->data){
+				else{
 					tmp=tmp->left;
 				}
 			}
+			else if(x>tmp->data){
+				if(tmp->right==NULL){
+					tmp->right=new NodeT(x);
+					tmp->right->parent=tmp;
+					adjustHeights(tmp->right);
+					return true;
+				}
+				else{
+					tmp=tmp->right;
+				}
+			}
+			else{
+				return false;
+			}
 		}
-		tmp=n;
-		n->parent=tmp->parent;
-		tmp=n->parent;
-		if(tmp->data>x){
-			tmp->right=n;
-		}
-		else{
-			tmp->left=n;
-		}
-		return true;
 	}
 
 }
@@ -71,32 +71,17 @@ bool BSTY:: insertit(string x ) {
 // the loop has worked its way up to the root, or until the currently being checked
 // ancestor is not changed.  
 void BSTY::adjustHeights(NodeT *n) {
-	if(n->parent->height>n->height){
-		return;
-	}
-	else{
-		NodeT *temp=n->parent;
-		bool brk=true;
-		int max;
-		while(brk || n!=root){
-			if(temp->right->height > temp->left->height){
-				max=temp->right->height;
-			}
-			if(temp->right->height < temp->left->height){
-				max=temp->left->height;
-			}
-			if(max==temp->height){
-				temp->height +=1;
-			}
-			if(temp->height >max+1){
-				temp->height-=1;
-			}
-			if(temp->parent->height >temp->height){
-				brk =false;
-			}
-			temp=temp->parent;
+	NodeT *tmp=n->parent;
+		if(tmp==NULL){
+			return;
 		}
-	}
+		else if(tmp->height>n->height){
+			return;
+		}
+		else{
+			tmp->height++;
+			return adjustHeights(tmp);
+		}
 }
 
 void BSTY::printTreeIO() {
@@ -115,9 +100,11 @@ void BSTY::printTreeIO(NodeT *n) {
 	if(n==NULL){
 		return;
 	}
+	else{
 	printTreeIO(n->left);
-	cout<<n->data<<endl;
+	n->printNode();
 	printTreeIO(n->right);
+	}
 }
 
 void BSTY::printTreePre() {
@@ -135,10 +122,10 @@ void BSTY::printTreePre() {
 void BSTY::printTreePre(NodeT *n) {
 	if(n==NULL){
 			return;
-		}
-	cout<<n->data<<endl;
-	printTreeIO(n->left);
-	printTreeIO(n->right);
+	}
+	n->printNode();
+	printTreePre(n->left);
+	printTreePre(n->right);
 }
 
 void BSTY::printTreePost() {
@@ -158,9 +145,9 @@ void BSTY::printTreePost(NodeT *n) {
 	if(n==NULL){
 			return;
 	}
-	printTreeIO(n->left);
-	printTreeIO(n->right);
-	cout<<n->data<<endl;
+	printTreePost(n->left);
+	printTreePost(n->right);
+	n->printNode();
 }
 void BSTY::myPrint() {
 	if (root == NULL ) {
@@ -192,30 +179,53 @@ void BSTY::myPrint(NodeT *n) {
 // NOTE: If the node can't be found, this method prints out that x can't be found.
 // if it is found, the printNode method is called for the node.  
 NodeT *BSTY::find(string x) {
-	NodeT *tmp=root;
-	if(root->data==x){
-		root->printNode();
-		return root;
-	}
-	else{
-		while(tmp->data!=x || tmp==NULL){
-
-			if(x>tmp->data){
-				tmp=tmp->right;
+	NodeT *a=root;
+		bool brk=true;
+		if(a->data==x){
+			brk=false;
+		}
+		else if(x<a->data){
+			a=a->left;
+			while(brk){
+				if(a==NULL){
+					brk=false;
+				}
+				else if(a->data==x){
+					brk=false;
+				}
+				else if(a->data>x){
+					a=a->left;
+				}
+				else{
+					a=a->right;
+				}
 			}
-			if(x<tmp->data){
-				tmp=tmp->left;
+		}
+		else if(a->data<x){
+			a=a->right;
+			cout<<a->data<<endl;
+			while(brk){
+				if(a==NULL){
+				brk=false;
+				}
+				else if(a->data==x){
+					brk=false;
+				}
+				else if(a->data>x){
+					a=a->left;
+				}
+				else{
+					a=a->right;
+				}
 			}
 		}
-		if(tmp->data==x){
-			tmp->printNode();
-			return tmp;
+		if(a==NULL){
+			cout<<x<<" Can't Be Found"<<endl;
 		}
-		if(tmp==NULL){
-			cout<<"x can't be found"<<endl;
-			return NULL;
+		else{
+			a->printNode();
 		}
-	}
+		return a;
 }
 
 /*************************************************************************************/
