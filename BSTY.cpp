@@ -79,6 +79,7 @@ void BSTY::adjustHeights(NodeT *n) {
 			return;
 		}
 		else{
+
 			tmp->height++;
 			return adjustHeights(tmp);
 		}
@@ -270,20 +271,23 @@ bool BSTY::remove(string s) {
 		count++;
 	}
 	if(count==2){
+		NodeT *T=rem->parent;
 		remove3(rem);
-		adjustHeights(rem);
+		adjustHeights(T);
 		delete rem;
 		removed=true;
 	}
 	if(count==1){
+		NodeT *T=rem->parent;
 		remove2(rem);
-		adjustHeights(rem);
+		adjustHeights(T);
 		delete rem;
 		removed=true;
 	}
 	if(count==0){
+		NodeT *T=rem->parent;
 		remove1(rem);
-		adjustHeights(rem);
+		adjustHeights(T);
 		delete rem;
 		removed=true;
 	}
