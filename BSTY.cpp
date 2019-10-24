@@ -72,17 +72,29 @@ bool BSTY:: insertit(string x ) {
 // ancestor is not changed.  
 void BSTY::adjustHeights(NodeT *n) {
 	NodeT *tmp=n->parent;
-		if(tmp==NULL){
-			return;
-		}
-		else if(tmp->height>n->height){
-			return;
-		}
-		else{
+	int maxHeight=0;
+	int right;
+	int left;
+	if(tmp==NULL){
+		return;
+	}
+	if(tmp->right != NULL){
+		right=tmp->right->height;
+	}
+	if(tmp->left!=NULL){
+		left=tmp->left->height;
+	}
 
-			tmp->height++;
-			return adjustHeights(tmp);
-		}
+	if(right>=left ||tmp->left==NULL){
+		maxHeight=right;
+	}
+	if(left>right || tmp->right==NULL){
+		maxHeight=left;
+	}
+
+	tmp->height=maxHeight+1;
+	return adjustHeights(tmp);
+
 }
 
 void BSTY::printTreeIO() {
@@ -204,7 +216,6 @@ NodeT *BSTY::find(string x) {
 		}
 		else if(a->data<x){
 			a=a->right;
-			cout<<a->data<<endl;
 			while(brk){
 				if(a==NULL){
 				brk=false;
@@ -221,7 +232,7 @@ NodeT *BSTY::find(string x) {
 			}
 		}
 		if(a==NULL){
-			cout<<x<<" Can't Be Found"<<endl;
+			cout<<x<<" not found"<<endl;
 		}
 		else{
 			a->printNode();
@@ -312,6 +323,7 @@ void BSTY::remove1(NodeT *n) {
 		rem->right==NULL;
 	}
 	n->parent==NULL;
+	delete n;
 }
 
 /* remove2(): called when the node to be removed has 1 child only.  Takes as input
@@ -347,6 +359,7 @@ void BSTY::remove2(NodeT *n) {
 		rem->right=temp1;
 		return;
 	}
+	delete n;
 }
 
 /* remove3(): called when the node to be removed has 2 children.  Takes as input the
@@ -385,6 +398,7 @@ void BSTY::remove3(NodeT *n) {
 		temp1->parent=leftmost;
 		temp2->parent=leftmost;
 	}
+	delete n;
 }
 
 /* findMin(): takes as input a node, and finds the left-most descendant of its 
