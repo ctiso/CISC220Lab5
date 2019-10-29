@@ -185,6 +185,30 @@ void BSTY::myPrint(NodeT *n) {
 		myPrint(n->right);
 	}
 }
+int BSTY::findBalance(NodeT *n){
+	if(n==NULL){
+		return 0;
+	}
+	else{
+		if(n->right==NULL && n->left==NULL){
+			return 0;
+		}
+		else if(n->left==NULL){
+			return n->right->height;
+		}
+		else if(n->right==NULL){
+			return n->left->height;
+		}
+		else{
+			return n->left->height - n->right->height;
+		}
+	}
+}
+NodeT * BSTY::rotateLeft(NodeT *n) {
+
+
+}
+
 
 // the find method takes as input a string, and finds whether that string is already
 // in the tree or not.  If it is in the tree, that node is returned from the tree.

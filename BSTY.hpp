@@ -23,6 +23,10 @@ public:
 	void myPrint();
 	void myPrint(NodeT *n);
 	NodeT *find(string x);
+	int BSTY::findBalance(NodeT *n);
+	NodeT * BSTY::rotateLeft(NodeT *n) ;
+
+
 
 // For Extra Credit
 	void myPrintEC();
